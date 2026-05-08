@@ -1,0 +1,26 @@
+[project]
+name = "codegraph"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "pydantic[email]",
+    "pydantic-settings",
+    "asyncpg",
+    "langchain",
+    "langchain-anthropic",
+    "langgraph",
+    "chromadb",
+    "anthropic",
+    "python-dotenv",
+    "redis",
+    "psycopg2-binary",
+    "langchain-chroma",
+    "pypdf",
+    "greenlet",
+    "fastapi-limiter",
+    "structlog>=25.5.0",
+]
