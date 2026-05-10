@@ -9,7 +9,9 @@ class Settings(BaseSettings):
     ENVIRONMENT: str
     LOG_LEVEL: str = "INFO"
     GITHUB_APP_ID: int
+    GITHUB_INSTALLATION_ID: int
     GITHUB_PRIVATE_KEY_PATH: str = "config/codegraphtest.2026-05-08.private-key.pem"
+    FERNET_KEY: str
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
 

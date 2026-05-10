@@ -23,7 +23,8 @@ dependencies = [
     "greenlet",
     "fastapi-limiter",
     "structlog>=25.5.0",
-    "PyGithub"
+    "PyGithub",
+    "cryptography",
 ]
 
 [dependency-groups]
