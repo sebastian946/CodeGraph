@@ -1,19 +1,16 @@
 from github import Github, Auth
-from config import _get_env_variable
+from config.config import get_settings
 
 
 class GithubTokenManager:
     def __init__(self):
-        self.github_app_id = _get_env_variable(self,"GITHUB_APP_ID")
+        self.settings = get_settings()
 
-    def config_token(self):
-        with open("codegraphtest.2026-05-08.private-key.pem", "r") as key_file:
+    def config_token(self) -> Github:
+        with open(self.settings.GITHUB_PRIVATE_KEY_PATH, "r") as key_file:
             private_key = key_file.read()
-        auth = Auth.AppAuth(app_id=self.github_app_id,private_key=private_key)
-        g = Github(auth=auth)
-        return g
-    
-    def get_repo(self, user:str, repo:str):
-        g = self.config_token()
-        repository = g.get_user(user).get_repo(repo)
-        return repository
+        auth = Auth.AppAuth(app_id=self.settings.GITHUB_APP_ID, private_key=private_key)
+        return Github(auth=auth)
+
+    def get_repo(self, user: str, repo: str, github_token: Github):
+        return github_token.get_user(user).get_repo(repo)
