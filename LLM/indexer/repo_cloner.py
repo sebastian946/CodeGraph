@@ -1,5 +1,8 @@
-import subprocess
+import os
+import tempfile
+from contextlib import contextmanager
 from pathlib import Path
+from git import Repo, GitCommandError
 from indexer.redis_events import RedisEvents
 from config.github_generate_token import GithubTokenManager
 
@@ -17,14 +20,28 @@ class RepoCloner:
         self.redis.save_encrypted("github_token", token, ex=3600)
         return token
 
-    def clone(self, owner: str, repo: str, target_dir: str) -> Path:
+    @contextmanager
+    def clone_repo(self, owner: str, repo: str):
+        """Clones a repo into a temporary directory and cleans up automatically.
+
+        Usage:
+            with cloner.clone_repo("owner", "repo") as path:
+                ...  # process files under path
+        """
         token = self._get_token()
-        # URL contains secret — do not log
-        clone_url = f"https://x-access-token:{token}@github.com/{owner}/{repo}.git"
-        clone_path = Path(target_dir) / repo
-        subprocess.run(
-            ["git", "clone", clone_url, str(clone_path)],
-            check=True,
-            capture_output=True,
-        )
-        return clone_path
+
+        # Pass token as HTTP header — never embedded in the URL or process list
+        git_env = dict(os.environ)
+        git_env["GIT_CONFIG_COUNT"] = "1"
+        git_env["GIT_CONFIG_KEY_0"] = "http.extraheader"
+        git_env["GIT_CONFIG_VALUE_0"] = f"Authorization: token {token}"
+
+        # TemporaryDirectory guarantees cleanup even if an exception is raised
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            clone_path = Path(tmp_dir) / repo
+            Repo.clone_from(
+                f"https://github.com/{owner}/{repo}.git",
+                str(clone_path),
+                env=git_env,
+            )
+            yield clone_path

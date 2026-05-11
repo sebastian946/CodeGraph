@@ -25,7 +25,8 @@ dependencies = [
     "structlog>=25.5.0",
     "PyGithub",
     "cryptography",
-    "numpy"
+    "numpy",
+    "gitpython"
 ]
 
 [dependency-groups]
