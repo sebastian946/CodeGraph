@@ -5,6 +5,9 @@
 dev: ## Start the development environment via Docker Compose
 	cd LLM && docker compose up --build
 
+bootstrap: ## Create Redis indices if they do not exist
+	cd LLM && uv run python -m indexer.bootstrap
+
 index: ## Run the document indexer
 	cd LLM && uv run python -m indexer
 
